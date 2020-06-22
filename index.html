@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pl">
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  
+    <meta charset="UTF-8">
+    <title>Zadanie 1</title>
+</head>
+<body>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Miasto</th>
+      <th>Województwo</th>
+      <th>Populacja</th>
+      <th>Powierzchnia</th>
+      <th>Gęstość</th>
+    </tr>
+    <tr>
+      <td onclick="sortColumn('nazwa')">Alfabetycznie</td>
+		  <td onclick="sortColumn('wojewodztwo')">Alfabetycznie</td>
+		  <td onclick="sortColumn('populacja')">Rosnąco / Malejąco</td>
+		  <td onclick="sortColumn('powierzchnia')">Rosnąco / Malejąco</td>
+		  <td onclick="sortColumn('gestosc')">Rosnąco / Malejąco</td>
+    </tr>
+    <tr>
+      <td ></td>
+		  <td><select id="mySelect" onchange="wojewodztwa(this.woj,miasta)">
+        <option value="Wszystko">Wszystko</option>
+        <option value="Pomorskie">Pomorskie</option>
+        <option value="Mazowieckie">Mazowieckie</option>
+        <option value="Małopolskie">Małopolskie</option>
+        <option value="Śląskie">Śląskie</option>
+        <option value="Zachodniopomorskie">Zachodniopomorskie</option>
+        <option value="Wielkopolskie">Wielkopolskie</option>
+        </select>
+      </td>
+		  <td></td>
+		  <td></td>
+		  <td></td>
+    </tr>
+    </thead>
+    <tbody id="miasta"></tbody>
+
+    <tfoot id="zbiorcze">
+      <tr>
+        <th >suma</th>
+        <td></td>
+        <td id=suma ></td>
+        <td id=sumaPow ></td>
+        <td id=sumaGes ></td>
+      </tr>
+      <tr>
+        <th>średnia</th>
+        <td></td>
+        <td id=srednia onmouseover="colorpop(this)" onmouseout="normalpop(this)"></td>
+        <td id=sredniaPow onmouseover="colorpow(this)" onmouseout="normalpow(this)"></td>
+        <td id=sredniaGes onmouseover="colorges(this)" onmouseout="normalges(this)"></td>
+      </tr>
+    </tfoot>
+  </table>
+  
+  
+</body>
+<script src="skrypt.js"></script>
+</html>

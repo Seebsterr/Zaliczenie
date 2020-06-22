@@ -1,0 +1,52 @@
+#city{
+  text-align: center;
+  background-color: #fafafa;
+}
+#suma:hover .pop {
+    background: red;
+}
+tbody tr:nth-child(even){
+
+  background-color: #e0e0e0;
+}
+tbody tr:hover {
+    background-color: #ffb74d !important;
+
+  }
+  td.pop:hover{
+    background-color: #ffb74d !important;
+  }
+
+  thead tr td[onclick]:hover {
+background-color: #e0e0e0;
+}
+thead tr td[onclick]:active {
+  background-color: #fafafa;
+  color: #212121
+}
+
+td, th{
+  border: 1px solid #CCCCCC;
+  padding: 10px;
+}
+th{
+  font-weight: bold;
+  text-transform: uppercase;
+}
+body{
+  margin: 0;
+}
+table{
+  font-family: 'Lato', sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+thead{
+  background-color: #424242;
+  color: #ffffff;
+  text-align: center;
+}
+#zbiorcze{
+  background-color: #fff59d;
+  text-align: center;
+}
