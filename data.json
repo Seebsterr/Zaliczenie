@@ -1,0 +1,26 @@
+{
+    "p": [
+        {
+            "id": "ID:1",
+            "autor": {
+                "mail": "sebastian.stenka@o2.pl",
+                "idProfilu": "1",
+                "nazwa": "Programowanie",
+                "awatar": "avatar2",
+                "stopka": "2018"
+            },
+            "tresc": "2 + 2 = ",
+            "odpowiedzi": [
+                "5",
+                "8",
+                "4"
+            ],
+            "plik": {
+                "id": "key.txt",
+                "url": "http://www.google.pl/json",
+                "opis": "Dobre zasady pisania kodu",
+                "autor": "Sebastian Stenka"
+            }
+        }
+    ]
+}
