@@ -1,0 +1,263 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace Example2
+{
+    class Program
+    {
+        private static List<string> lines;
+        private static List<string> exportedHTML = new List<string>();
+        private static int oneStarLen;
+        private static int twoStarLen;
+
+        private static int lineLen;
+        private static bool nextPause;
+        private static bool withErrors;
+        private static readonly char STAR = '*';
+        private static readonly char HASZ = '#';
+
+
+        static void Main(string[] args)
+        {
+            lines = AddText();
+            ExportToHTML();
+
+            if (!withErrors)
+            {
+                PrintHTMLText();
+            }
+            Console.ReadKey();
+        }
+
+        private static void PrintHTMLText()
+        {
+            exportedHTML.ForEach(l => Console.WriteLine(l));
+        }
+
+        private static List<string> AddText()
+        {
+            return new List<string>
+            {
+                "{typ|Tytuł} Przykładowy tekst",
+                "#Przykładowy tekst",
+                ">>Przykładowy tekst<< >>Przykładowy tekst<<",
+                "_!Przykładowy tekst!_  _!Przykładowy tekst!_",
+                "**Przykładowy tekst**",
+                "*Przykładowy tekst*  *Przykładowy tekst*",
+                "[Adresik|Przykładowy tekst]",
+                "-!Przykładowy tekst!-  -!Przykładowy tekst!-"
+            };
+        }
+
+        private static bool IsCorrectHTML(string line)
+        {
+            var a = Regex.Matches(line, @"<<").Count;
+            var b = Regex.Matches(line, @">>").Count;
+            if (a != b)
+            {
+                return false;
+            }
+
+            a = Regex.Matches(line, @"!_").Count;
+            b = Regex.Matches(line, @"_!").Count;
+            if (a != b)
+            {
+                return false;
+            }
+
+            a = Regex.Matches(line, @"!-").Count;
+            b = Regex.Matches(line, @"-!").Count;
+            if (a != b)
+            {
+                return false;
+            }
+
+            oneStarLen = line.Count(l => l == STAR);
+            if (oneStarLen % 2 == 1)
+            {
+                return false;
+            }
+
+            twoStarLen = Regex.Matches(line, @"\*\*").Count;
+            if (twoStarLen % 2 == 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        private static void ExportToHTML()
+        {
+            foreach (var element in lines)
+            {
+                if (!IsCorrectHTML(element))
+                {
+                    Console.WriteLine("Niepoprawne zagnieżdzenia");
+                    withErrors = true;
+                    return;
+                }
+
+                var line = element;
+                line = GetHTMLLine(line);
+               
+                exportedHTML.Add(line);
+            }
+        }
+
+        private static string GetHTMLLine(string line)
+        {
+            if (line[0] == HASZ)
+            {
+                var rest = line.Substring(1, line.Length - 1);
+                line = $"<h1 id=”nX”>{rest}</h1>";
+            }
+            else if (line[0] == '{')
+            {
+                line = GetAsite(line);
+                if(withErrors)
+                {
+                    return string.Empty;
+                }
+            }
+            else if (line[0] == '[')
+            {
+                line = GetHref(line);
+                if (withErrors)
+                {
+                    return string.Empty;
+                }
+            }
+            else
+            {
+
+                line = line.Replace("-!", "<del>");
+                line = line.Replace("!-", "</del>");
+                line = line.Replace(">>", "<q>");
+                line = line.Replace("<<", "</q>");
+                line = line.Replace("_!", "<ins>");
+                line = line.Replace("!_", "</ins>");
+
+                if (twoStarLen > 0)
+                {
+                    line = DoTwoStars(line);
+                }
+
+                line = DoOneStar(line);
+                line = "<p>" + line + "</p>";
+            }
+
+            return line;
+        }
+
+        private static string GetHref(string line)
+        {
+            var end = line.IndexOf(']');
+            if (end == -1)
+            {
+                Console.WriteLine("Niepoprawne zagnieżdzenia");
+                withErrors = true;
+            }
+
+            var element1 = line.Substring(1, end - 1);
+            var address = element1.Split('|')[0];
+            var text = element1.Split('|')[1];
+
+            var href = $"<a href=”{address}”>{text}</a>";
+            href = "<p>" + href + "</p>";
+            return href;
+        }
+
+        private static string GetAsite(string line)
+        {
+            var end = line.IndexOf('}');
+            if (end == -1)
+            {
+                Console.WriteLine("Niepoprawne zagnieżdzenia");
+                withErrors = true;
+            }
+
+            var element1 = line.Substring(1, end - 1);
+            var type = element1.Split('|')[0];
+            var title = element1.Split('|')[1];
+            var text = line.Substring(end + 1, line.Length - end - 1);
+
+            var aside = $"<aside cat=”{type}”> <header>{title}</header> <main>{text}</main> </aside>";
+            aside = "<p>" + aside + "</p>";
+            return aside;
+        }
+
+        private static string DoTwoStars(string line)
+        {
+            var tmpLine = string.Empty;
+
+            foreach (var str in line)
+            {
+                if (twoStarLen == 0)
+                {
+                    return tmpLine;
+                }
+
+                string tmp = str.ToString();
+                lineLen++;
+
+                if (!nextPause)
+                {
+                    if (str == STAR && twoStarLen % 2 == 0)
+                    {
+                        if (line[lineLen--] == STAR)
+                        {
+                            tmp = "<strong>";
+                            twoStarLen--;
+                            nextPause = true;
+                        }
+                    }
+                    else if (str == STAR && twoStarLen % 2 == 1)
+                    {
+                        if (line[lineLen--] == STAR)
+                        {
+                            tmp = "</strong>";
+                            twoStarLen--;
+                            nextPause = true;
+                        }
+                    }
+                }
+                else
+                {
+                    nextPause = false;
+                    tmp = string.Empty;
+                }
+
+                tmpLine += tmp;
+            }
+            lineLen = 0;
+            return tmpLine;
+        }
+
+        private static string DoOneStar(string line)
+        {
+            var tmpLine = string.Empty;
+
+            foreach (var str in line)
+            {
+                string tmp = str.ToString();
+
+                if (str == STAR && oneStarLen % 2 == 0)
+                {
+                    tmp = "<em>";
+                    oneStarLen--;
+                }
+                else if (str == STAR && oneStarLen % 2 == 1)
+                {
+                    tmp = "</em>";
+                    oneStarLen--;
+                }
+                tmpLine += tmp;
+            }
+            return tmpLine;
+        }
+    }
+}
